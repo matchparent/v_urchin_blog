@@ -1,10 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Link from 'next/link'; // Import Link for navigation
-import MDEditor from '@uiw/react-md-editor'; // Import MDEditor
-import { req } from '@/utils/RequestConfig'; // Import req
-import { AxiosError } from 'axios'; // Import AxiosError
+import { useSession } from 'next-auth/react';
+import Link from 'next/link';
+import MDEditor from '@uiw/react-md-editor';
+import { req } from '@/utils/RequestConfig';
+import { AxiosError } from 'axios';
 
 interface Blog {
   bid: number;
@@ -14,22 +15,31 @@ interface Blog {
   create_time: string;
 }
 
-export default function Home() {
+export default function MyBlogs() {
+  const { data: session, status } = useSession();
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchBlogs = () => {
+    if (status === 'loading') return; // Wait for session to load
+
+    if (!session?.user?.id) {
+      setError('User not logged in.');
+      setLoading(false);
+      return;
+    }
+
+    const fetchMyBlogs = () => {
       req({
-        url: '/api/blogs',
+        url: `/api/blogs?uid=${session.user.id}`,
         method: 'GET',
       })
         .then(({ data }) => {
           setBlogs(data);
         })
         .catch((e: unknown) => {
-          console.error('Error fetching blogs:', e);
+          console.error('Error fetching my blogs:', e);
           const axiosError = e as AxiosError<{ message: string }>;
           setError(
             axiosError.response?.data?.message ||
@@ -41,12 +51,13 @@ export default function Home() {
           setLoading(false);
         });
     };
-    fetchBlogs();
-  }, []);
+
+    fetchMyBlogs();
+  }, [session, status]);
 
   if (loading)
     return (
-      <div className="p-5 text-[#333] dark:text-white">Loading blogs...</div>
+      <div className="p-5 text-[#333] dark:text-white">Loading my blogs...</div>
     );
   if (error) return <div className="p-5 text-red-500">Error: {error}</div>;
   if (blogs.length === 0)
@@ -56,18 +67,17 @@ export default function Home() {
 
   return (
     <div className="p-5 text-[#333] dark:text-white">
+      <h1 className="text-2xl font-bold mb-5">My Blogs</h1>
       {blogs.map((blog) => (
-        <div
+        <Link
           key={blog.bid}
-          className="block mb-5 pb-4 border-b border-gray-200 no-underline text-inherit transition-colors duration-200"
+          href={`/blog/${blog.bid}`}
+          className="block mb-5 pb-1 border-b border-gray-200 no-underline text-inherit transition-colors duration-200"
         >
           <div className="text-xs text-gray-500 clearfix">
-            <Link
-              href={`/blog/${blog.bid}`}
-              className="text-lg font-bold mb-1 float-left text-blue-500 border-b-2 border-blue-500 border-solid"
-            >
+            <h2 className="text-lg font-bold mb-1 float-left text-[#333] dark:text-white">
               {blog.title}
-            </Link>
+            </h2>
             <span className="float-right mt-2 text-[#333] dark:text-white">
               {new Date(blog.create_time).toLocaleDateString('en-US', {
                 month: '2-digit',
@@ -83,7 +93,7 @@ export default function Home() {
             style={{ whiteSpace: 'pre-wrap', background: 'transparent' }}
             className="text-[#333] dark:text-white"
           />
-        </div>
+        </Link>
       ))}
     </div>
   );

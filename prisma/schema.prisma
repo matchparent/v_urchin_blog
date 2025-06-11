@@ -1,0 +1,121 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model db_artag {
+  atid     Int    @id @default(autoincrement()) @db.UnsignedInt
+  tag_name String @db.VarChar(100)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model db_artcat {
+  acid     Int     @id @default(autoincrement()) @db.UnsignedInt
+  opt      String  @unique(map: "opt") @db.VarChar(100)
+  cat_name String  @db.VarChar(100)
+  uid      String? @db.Char(36)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model db_article {
+  aid         Int       @id @default(autoincrement()) @db.UnsignedInt
+  title       String    @db.VarChar(100)
+  uid         String    @db.Char(36)
+  cover       String    @db.VarChar(250)
+  content     String    @db.MediumText
+  acid        Int       @db.UnsignedInt
+  ayid        Int       @db.UnsignedInt
+  atids       String    @db.VarChar(100)
+  num_like    Int       @default(0) @db.UnsignedInt
+  num_fav     Int       @default(0) @db.UnsignedInt
+  num_view    Int       @default(0) @db.UnsignedInt
+  status      Int       @db.UnsignedInt
+  create_time DateTime? @default(now()) @db.DateTime(0)
+  update_time DateTime? @db.DateTime(0)
+}
+
+model db_artype {
+  ayid    Int    @id @default(autoincrement()) @db.UnsignedInt
+  typestr String @db.VarChar(100)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model db_focus {
+  fcid        Int       @id @default(autoincrement()) @db.UnsignedInt
+  uid         String    @db.Char(36)
+  tuid        String    @db.Char(36)
+  status      String    @db.VarChar(10)
+  create_time DateTime? @default(now()) @db.DateTime(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model db_like {
+  lid         Int       @id @default(autoincrement()) @db.UnsignedInt
+  uid         String    @db.Char(36)
+  aid         Int       @db.UnsignedInt
+  status      String    @db.VarChar(10)
+  create_time DateTime? @default(now()) @db.DateTime(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model db_reply {
+  rid         Int       @id @default(autoincrement()) @db.UnsignedInt
+  uid         String    @db.Char(36)
+  aid         Int       @db.UnsignedInt
+  content     String    @db.MediumText
+  rbid        Int?      @db.UnsignedInt
+  rtuid       String?   @db.Char(36)
+  create_time DateTime? @default(now()) @db.DateTime(0)
+}
+
+model db_vericode {
+  vcid        Int       @id @default(autoincrement()) @db.UnsignedInt
+  email       String    @db.VarChar(100)
+  code        String    @db.VarChar(255)
+  create_time DateTime? @default(now()) @db.DateTime(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model db_user {
+  uid         String    @id @default(dbgenerated("(uuid())")) @db.Char(36)
+  email       String    @unique @db.VarChar(100)
+  pwd         String    @db.VarChar(255)
+  nickname    String    @db.VarChar(255)
+  job         String?   @db.VarChar(255)
+  intro       String?   @db.VarChar(255)
+  motto       String?   @db.VarChar(255)
+  img         Bytes?
+  date_birth  DateTime? @db.Date
+  num_art     Int?      @default(0)
+  num_focus   Int?      @default(0)
+  num_laf     Int?      @default(0)
+  create_time DateTime? @default(now()) @db.DateTime(0)
+  update_time DateTime? @default(now()) @db.DateTime(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model ub_blog {
+  bid         Int       @id @default(autoincrement()) @db.UnsignedInt
+  title       String    @db.VarChar(100)
+  uid         String    @db.Char(36)
+  content     String    @db.MediumText
+  num_view    Int       @default(0) @db.UnsignedInt
+  status      Int       @db.UnsignedInt
+  create_time DateTime? @default(now()) @db.DateTime(0)
+  update_time DateTime? @db.DateTime(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model ub_reply {
+  rid         Int       @id @default(autoincrement()) @db.UnsignedInt
+  uid         String    @db.Char(36)
+  bid         Int       @db.UnsignedInt
+  content     String    @db.MediumText
+  rbid        Int?      @db.UnsignedInt
+  rtuid       String?   @db.Char(36)
+  create_time DateTime? @default(now()) @db.DateTime(0)
+}
