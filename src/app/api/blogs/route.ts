@@ -7,8 +7,11 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get('uid'); // Get uid from query params
-    const page = parseInt(searchParams.get('page' || '1')); // Default to page 1
-    const limit = parseInt(searchParams.get('limit' || '4')); // Default to 4 blogs per page
+    const pageParam = searchParams.get('page');
+    const page = parseInt(pageParam ?? '1'); // ✅ null 合并运算符保证类型安全
+
+    const limitParam = searchParams.get('limit');
+    const limit = parseInt(limitParam ?? '4'); // ✅ 同理// Default to 4 blogs per page
 
     const skip = (page - 1) * limit;
 
