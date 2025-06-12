@@ -34,8 +34,8 @@ interface ReplyComment {
   rbid: number;
   rtuid: string;
   create_time: string;
-  user?: CommentUser;
-  replyToUser?: CommentUser;
+  userNickname: string;
+  replyToUserNickname?: string;
 }
 
 interface TopLevelComment {
@@ -46,7 +46,7 @@ interface TopLevelComment {
   rbid: null;
   rtuid: null;
   create_time: string;
-  user?: CommentUser;
+  userNickname: string;
   replies: ReplyComment[];
 }
 
@@ -123,7 +123,7 @@ export default function BlogDetailPage() {
     setReplyTo({
       rbid: isTopLevel ? comment.rid : comment.rbid,
       rtuid: comment.uid,
-      rtuname: comment.user?.nickname ?? comment.user?.uid ?? null,
+      rtuname: comment.userNickname ?? comment.uid ?? null,
     });
     setCommentContent(''); // Clear current content when replying
     commentInputRef.current?.focus();
@@ -186,28 +186,22 @@ export default function BlogDetailPage() {
     >
       <div className="flex items-center mb-2">
         <Avatar
-          src={
-            comment.user?.uid
-              ? `/api/portrait?uid=${comment.user.uid}`
-              : undefined
-          }
+          src={comment.uid ? `/api/portrait?uid=${comment.uid}` : undefined}
           icon={<UserOutlined />}
           className="mr-4"
           onError={() => {
-            console.error(
-              `Failed to load avatar for user: ${comment.user?.uid}`
-            );
+            console.error(`Failed to load avatar for user: ${comment.uid}`);
             return true;
           }}
         />
         <span className="font-bold text-base text-[#333] dark:text-white ml-2">
-          {comment.user?.nickname || 'Anonymous'}
+          {comment.userNickname || 'Anonymous'}
         </span>
-        {comment.rtuid && comment.replyToUser && (
+        {comment.rtuid && comment.replyToUserNickname && (
           <span className="ml-2 text-gray-500 text-sm">
             reply to{' '}
             <span className="font-bold">
-              {comment.replyToUser.nickname || 'Anonymous'}
+              {comment.replyToUserNickname || 'Anonymous'}
             </span>
             :
           </span>

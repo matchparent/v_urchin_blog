@@ -6,7 +6,7 @@ import { authOptions } from '@/lib/auth';
 const prisma = new PrismaClient();
 
 // 定义评论类型
-interface CommentWithRelations {
+interface CommentWithUser {
   rid: number;
   uid: string;
   bid: number;
@@ -14,13 +14,13 @@ interface CommentWithRelations {
   rbid: number | null;
   rtuid: string | null;
   create_time: Date | null;
-  user?: { uid: string; nickname: string | null };
-  replyToUser?: { uid: string; nickname: string | null } | null;
+  userNickname: string;
+  replyToUserNickname?: string;
 }
 
 // 定义分组后的评论类型
-interface GroupedComment extends CommentWithRelations {
-  replies: CommentWithRelations[];
+interface GroupedComment extends CommentWithUser {
+  replies: CommentWithUser[];
 }
 
 export async function GET(request: NextRequest) {
@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // 获取所有评论及相关用户信息
+    // 获取所有评论
     const comments = await prisma.ub_reply.findMany({
       where: {
         bid: parseInt(bid),
@@ -43,27 +43,48 @@ export async function GET(request: NextRequest) {
       orderBy: {
         create_time: 'asc',
       },
-      include: {
-        // 获取评论发布者的信息 (根据 prisma/schema.prisma 关联 user 表)
-        user: {
-          select: {
-            uid: true,
-            nickname: true,
-          },
+    });
+
+    // 获取所有相关的用户 ID
+    const userIds = new Set<string>();
+    comments.forEach((comment) => {
+      userIds.add(comment.uid);
+      if (comment.rtuid) {
+        userIds.add(comment.rtuid);
+      }
+    });
+
+    // 批量获取用户信息
+    const users = await prisma.db_user.findMany({
+      where: {
+        uid: {
+          in: Array.from(userIds),
         },
-        // 获取回复对象用户的信息 (根据 prisma/schema.prisma 关联 user 表)
-        replyToUser: {
-          select: {
-            uid: true,
-            nickname: true,
-          },
-        },
+      },
+      select: {
+        uid: true,
+        nickname: true,
       },
     });
 
+    // 创建用户昵称映射
+    const userNicknameMap = new Map<string, string>();
+    users.forEach((user) => {
+      userNicknameMap.set(user.uid, user.nickname);
+    });
+
+    // 为评论添加用户信息
+    const commentsWithUser: CommentWithUser[] = comments.map((comment) => ({
+      ...comment,
+      userNickname: userNicknameMap.get(comment.uid) || 'Unknown User',
+      replyToUserNickname: comment.rtuid
+        ? userNicknameMap.get(comment.rtuid)
+        : undefined,
+    }));
+
     // 将评论按 rbid 分组，rbid 为空的是一级评论
     const groupedComments: { [key: number]: GroupedComment } = {};
-    comments.forEach((comment: CommentWithRelations) => {
+    commentsWithUser.forEach((comment: CommentWithUser) => {
       if (!comment.rbid) {
         // 一级评论
         groupedComments[comment.rid] = { ...comment, replies: [] };
