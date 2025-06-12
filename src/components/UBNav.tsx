@@ -13,7 +13,7 @@ import { Skeleton } from 'antd';
 
 const navItems = [
   {
-    label: 'Home',
+    label: 'Urchin Blog Home',
     href: '/',
   },
   {

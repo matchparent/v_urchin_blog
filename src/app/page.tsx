@@ -5,6 +5,7 @@ import Link from 'next/link'; // Import Link for navigation
 import MDEditor from '@uiw/react-md-editor'; // Import MDEditor
 import { req } from '@/utils/RequestConfig'; // Import req
 import { AxiosError } from 'axios'; // Import AxiosError
+import { Pagination } from 'antd'; // Import Pagination
 
 interface Blog {
   bid: number;
@@ -18,15 +19,20 @@ export default function Home() {
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1); // Current page state
+  const [totalBlogs, setTotalBlogs] = useState(0); // Total blogs count
+  const pageSize = 4; // Blogs per page
 
   useEffect(() => {
     const fetchBlogs = () => {
+      setLoading(true);
       req({
-        url: '/api/blogs',
+        url: `/api/blogs?page=${currentPage}&limit=${pageSize}`,
         method: 'GET',
       })
         .then(({ data }) => {
-          setBlogs(data);
+          setBlogs(data.blogs);
+          setTotalBlogs(data.totalBlogs);
         })
         .catch((e: unknown) => {
           console.error('Error fetching blogs:', e);
@@ -42,14 +48,19 @@ export default function Home() {
         });
     };
     fetchBlogs();
-  }, []);
+  }, [currentPage]); // Re-fetch blogs when currentPage changes
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
 
   if (loading)
     return (
       <div className="p-5 text-[#333] dark:text-white">Loading blogs...</div>
     );
   if (error) return <div className="p-5 text-red-500">Error: {error}</div>;
-  if (blogs.length === 0)
+  if (blogs.length === 0 && totalBlogs === 0)
+    // Check totalBlogs as well
     return (
       <div className="p-5 text-[#333] dark:text-white">No blogs found.</div>
     );
@@ -85,6 +96,17 @@ export default function Home() {
           />
         </div>
       ))}
+      {totalBlogs > pageSize && (
+        <div className="mt-8 flex justify-center">
+          <Pagination
+            current={currentPage}
+            pageSize={pageSize}
+            total={totalBlogs}
+            onChange={handlePageChange}
+            showSizeChanger={false} // Disable page size changer
+          />
+        </div>
+      )}
     </div>
   );
 }

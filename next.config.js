@@ -12,7 +12,7 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: prod ? 'https' : 'http',
-        hostname: prod ? 'yourdomain.vercel.app' : 'localhost',
+        hostname: prod ? 'blog.urchin.website' : 'localhost',
         port: prod ? '' : '3000',
         pathname: '/api/**',
       },

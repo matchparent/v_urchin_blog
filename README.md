@@ -1,3 +1,20 @@
+This blog project is a personal resume project, with its database deployed on **Railway** and the Next.js application deployed on **Vercel**. Developed by **Cursor**.
+
+## Features
+
+This project includes a comprehensive set of features to provide a full-fledged blog experience:
+
+- **User Authentication**: Secure login and registration functionalities powered by NextAuth.js.
+- **Dynamic Login Modal**: The login modal intelligently appears based on URL parameters for seamless user experience.
+- **User Profile Management**: Users can manage their basic information, including avatar, nickname, and birthday. Password modification is also available with specific restrictions.
+- **Blog Management**: Users can create, view, and manage their blog posts.
+- **Interactive Comment System**: A robust comment section supporting nested replies, allowing for dynamic discussions on blog posts.
+- **Avatar Display**: Commenters' avatars are displayed for a personalized touch.
+- **Intuitive Navigation**: The blog logo is clickable, providing quick navigation back to the home page.
+- **Blog List Pagination**: Efficiently browse through blog posts with a paginated list, displaying 4 blogs per page.
+
+## Technologies Used
+
 This blog project is built with a modern web development stack, leveraging the power of Next.js for a robust and scalable application. Below are the key technologies and libraries utilized:
 
 - **Next.js**: A React framework for building server-side rendered (SSR) and statically generated web applications, utilizing the new App Router.
@@ -14,5 +31,3 @@ This blog project is built with a modern web development stack, leveraging the p
 - **Day.js**: A minimalist JavaScript library for parsing, validating, manipulating, and displaying dates and times.
 - **Axios**: A promise-based HTTP client for making API requests.
 - **ESLint & Prettier**: For code linting and formatting, ensuring code consistency and quality.
-
-Database deployed on Railway, Next deployed on Vercel
