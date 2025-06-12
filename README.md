@@ -1,36 +1,18 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+This blog project is built with a modern web development stack, leveraging the power of Next.js for a robust and scalable application. Below are the key technologies and libraries utilized:
 
-## Getting Started
+- **Next.js**: A React framework for building server-side rendered (SSR) and statically generated web applications, utilizing the new App Router.
+- **Next.js API Routes**: For building robust backend APIs within the Next.js application, handling data fetching and manipulation.
+- **Next.js Middleware**: For intercepting requests and applying logic before they are completed, such as authentication and redirection.
+- **NextAuth.js**: A flexible open-source authentication library for Next.js, handling secure user authentication and session management.
+- **Prisma**: A next-generation ORM (Object-Relational Mapper) for Node.js and TypeScript, used for database access and management.
+- **MySQL**: The relational database used to store application data.
+- **Ant Design**: A popular React UI library providing a rich set of high-quality components for building elegant user interfaces.
+- **Tailwind CSS**: A utility-first CSS framework for rapidly building custom designs directly in your markup.
+- **TypeScript**: A strongly typed superset of JavaScript that enhances code quality and developer experience.
+- **SCSS Modules**: For modular and maintainable styling, allowing scoped CSS classes.
+- **MDEditor**: A Markdown editor component for rich text content creation.
+- **Day.js**: A minimalist JavaScript library for parsing, validating, manipulating, and displaying dates and times.
+- **Axios**: A promise-based HTTP client for making API requests.
+- **ESLint & Prettier**: For code linting and formatting, ensuring code consistency and quality.
 
-First, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Database deployed on Railway, Next deployed on Vercel
