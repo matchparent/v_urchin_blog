@@ -36,7 +36,7 @@ export default function MyBlogs() {
         method: 'GET',
       })
         .then(({ data }) => {
-          setBlogs(data);
+          setBlogs(data.blogs || []);
         })
         .catch((e: unknown) => {
           console.error('Error fetching my blogs:', e);
