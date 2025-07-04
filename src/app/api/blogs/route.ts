@@ -28,6 +28,7 @@ export async function GET(request: Request) {
         content: true,
         num_view: true,
         create_time: true,
+        uid: true,
       },
       orderBy: {
         create_time: 'desc',
@@ -36,11 +37,34 @@ export async function GET(request: Request) {
       take: limit,
     });
 
+    // 批量获取作者信息
+    const userIds = blogs.map((blog) => blog.uid);
+    const users = await prisma.db_user.findMany({
+      where: { uid: { in: userIds } },
+      select: { uid: true, nickname: true, img: true },
+    });
+    const userMap = new Map(users.map((u) => [u.uid, u]));
+
+    const blogsWithAuthor = blogs.map((blog) => ({
+      ...blog,
+      author: userMap.has(blog.uid)
+        ? {
+            uid: blog.uid,
+            nickname: userMap.get(blog.uid)?.nickname || '',
+            img: userMap.get(blog.uid)?.img
+              ? Buffer.isBuffer(userMap.get(blog.uid)?.img)
+                ? userMap.get(blog.uid)?.img.toString('base64')
+                : userMap.get(blog.uid)?.img
+              : null,
+          }
+        : null,
+    }));
+
     const totalBlogs = await prisma.ub_blog.count({
       where: whereClause,
     });
 
-    return NextResponse.json({ blogs, totalBlogs });
+    return NextResponse.json({ blogs: blogsWithAuthor, totalBlogs });
   } catch (error) {
     console.error('Error fetching blogs:', error);
     return NextResponse.json(

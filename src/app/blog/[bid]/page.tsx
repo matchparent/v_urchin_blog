@@ -6,7 +6,7 @@ import MDEditor from '@uiw/react-md-editor';
 import Link from 'next/link';
 import { req } from '@/utils/RequestConfig';
 import { AxiosError } from 'axios';
-import { Input, Button, message, Avatar } from 'antd';
+import { Input, Button, message, Avatar, Image } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import { useSession } from 'next-auth/react';
 import dayjs from 'dayjs';
@@ -19,6 +19,12 @@ interface Blog {
   content: string;
   num_view: number;
   create_time: string;
+  uid?: string;
+  author?: {
+    uid: string;
+    nickname: string;
+    img: string | null;
+  } | null;
 }
 
 interface CommentUser {
@@ -69,6 +75,7 @@ export default function BlogDetailPage() {
   const [error, setError] = useState<string | null>(null);
   const [messageApi, contextHolder] = message.useMessage();
   const [highlightInput, setHighlightInput] = useState(false);
+  const [avatarError, setAvatarError] = useState(false);
 
   const commentInputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -273,16 +280,38 @@ export default function BlogDetailPage() {
       >
         &larr; Back to Blogs
       </Link>
-      <h1 className="text-2xl font-bold mb-2">{blog.title}</h1>
-      <div className="flex items-center text-xs text-gray-500 mb-4">
-        <span className="mr-4">Views: {blog.num_view}</span>
-        <span>
-          Published:{' '}
-          {new Date(blog.create_time).toLocaleDateString('en-US', {
-            month: '2-digit',
-            day: '2-digit',
-          })}
-        </span>
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold mb-0">{blog.title}</h1>
+        <div className="flex items-center text-xs text-gray-500">
+          {blog.author && (
+            <div className="flex items-center mr-4 mt-[-2px]">
+              <Image
+                src={
+                  avatarError
+                    ? '/deletex.png'
+                    : `/api/portrait?uid=${blog.author.uid}&t=${Date.now()}`
+                }
+                alt="Avatar"
+                width={24}
+                height={24}
+                className="object-cover mr-2 rounded-full"
+                onError={() => setAvatarError(true)}
+                onLoad={() => setAvatarError(false)}
+              />
+              <span className="font-bold text-sm text-[#333] dark:text-white ml-2">
+                {blog.author.nickname}
+              </span>
+            </div>
+          )}
+          <span className="mr-4">Views: {blog.num_view}</span>
+          <span>
+            Published:{' '}
+            {new Date(blog.create_time).toLocaleDateString('en-US', {
+              month: '2-digit',
+              day: '2-digit',
+            })}
+          </span>
+        </div>
       </div>
       <MDEditor.Markdown
         source={blog.content}

@@ -25,12 +25,19 @@ export async function GET(
         content: true,
         num_view: true,
         create_time: true,
+        uid: true,
       },
     });
 
     if (!blog) {
       return NextResponse.json({ message: 'Blog not found' }, { status: 404 });
     }
+
+    // 查询作者信息
+    const author = await prisma.db_user.findUnique({
+      where: { uid: blog.uid },
+      select: { uid: true, nickname: true, img: true },
+    });
 
     // Increment num_view
     await prisma.ub_blog.update({
@@ -44,9 +51,22 @@ export async function GET(
       },
     });
 
-    // Return the updated blog data (or original if you prefer not to re-fetch)
-    // For simplicity, we'll return the original fetched blog, but you could re-fetch to show the incremented view immediately
-    const updatedBlog = { ...blog, num_view: blog.num_view + 1 };
+    // 返回作者信息
+    const updatedBlog = {
+      ...blog,
+      num_view: blog.num_view + 1,
+      author: author
+        ? {
+            uid: author.uid,
+            nickname: author.nickname,
+            img: author.img
+              ? Buffer.isBuffer(author.img)
+                ? author.img.toString('base64')
+                : author.img
+              : null,
+          }
+        : null,
+    };
     return NextResponse.json(updatedBlog);
   } catch (error) {
     console.error('Error fetching blog:', error);

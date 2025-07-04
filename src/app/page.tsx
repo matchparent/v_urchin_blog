@@ -5,7 +5,7 @@ import Link from 'next/link'; // Import Link for navigation
 import MDEditor from '@uiw/react-md-editor'; // Import MDEditor
 import { req } from '@/utils/RequestConfig'; // Import req
 import { AxiosError } from 'axios'; // Import AxiosError
-import { Pagination } from 'antd'; // Import Pagination
+import { Pagination, Image } from 'antd'; // Import Pagination and Image
 
 interface Blog {
   bid: number;
@@ -13,6 +13,11 @@ interface Blog {
   content: string;
   num_view: number;
   create_time: string;
+  author?: {
+    uid: number;
+    nickname: string;
+    img?: string;
+  };
 }
 
 export default function Home() {
@@ -72,22 +77,43 @@ export default function Home() {
           key={blog.bid}
           className="block mb-5 pb-4 border-b border-gray-200 no-underline text-inherit transition-colors duration-200"
         >
-          <div className="text-xs text-gray-500 clearfix">
+          <div className="text-xs text-gray-500 clearfix flex items-center">
             <Link
               href={`/blog/${blog.bid}`}
-              className="text-lg font-bold mb-1 float-left text-blue-500 border-b-2 border-blue-500 border-solid"
+              className="text-lg font-bold mb-1 text-blue-500 border-b-2 border-blue-500 border-solid"
             >
               {blog.title}
             </Link>
-            <span className="float-right mt-2 text-[#333] dark:text-white">
-              {new Date(blog.create_time).toLocaleDateString('en-US', {
-                month: '2-digit',
-                day: '2-digit',
-              })}
-            </span>
-            <span className="mr-8 float-right mt-2 text-[#333] dark:text-white">
-              Views: {blog.num_view}
-            </span>
+            <div className="flex items-center ml-auto">
+              {blog.author && (
+                <div className="flex items-center mr-4 mt-[-2px]">
+                  <Image
+                    src={
+                      blog.author.img
+                        ? `/api/portrait?uid=${blog.author.uid}&t=${Date.now()}`
+                        : '/deletex.png'
+                    }
+                    alt="Avatar"
+                    width={24}
+                    height={24}
+                    className="object-cover mr-2 rounded-full"
+                    fallback="/deletex.png"
+                  />
+                  <span className="font-bold text-sm text-[#333] dark:text-white ml-2">
+                    {blog.author.nickname}
+                  </span>
+                </div>
+              )}
+              <span className="mr-8 text-[#333] dark:text-white">
+                Views: {blog.num_view}
+              </span>
+              <span className="text-[#333] dark:text-white">
+                {new Date(blog.create_time).toLocaleDateString('en-US', {
+                  month: '2-digit',
+                  day: '2-digit',
+                })}
+              </span>
+            </div>
           </div>
           <MDEditor.Markdown
             source={blog.content}
