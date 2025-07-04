@@ -84,11 +84,13 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
   try {
-    const session = await getServerSession(authOptions);
-    const userId = session?.user?.id;
+    const { userId, oldPassword, newPassword } = await request.json();
 
     if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json(
+        { error: 'User ID is required' },
+        { status: 400 }
+      );
     }
 
     // 定义受限制的 UID 列表
@@ -105,8 +107,6 @@ export async function PUT(request: Request) {
         { status: 403 }
       );
     }
-
-    const { oldPassword, newPassword } = await request.json();
 
     if (!oldPassword || !newPassword) {
       return NextResponse.json(

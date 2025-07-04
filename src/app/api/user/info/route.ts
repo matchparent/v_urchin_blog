@@ -1,26 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
 export async function GET(request: NextRequest) {
   try {
-    // 获取用户 session
-    const session = await getServerSession(authOptions);
+    // 从查询参数获取 userId
+    const { searchParams } = new URL(request.url);
+    const userId = searchParams.get('userId');
 
-    if (!session?.user?.id) {
+    if (!userId) {
       return NextResponse.json(
-        { error: 'User not authenticated' },
-        { status: 401 }
+        { error: 'User ID is required' },
+        { status: 400 }
       );
     }
 
     // 从数据库获取用户信息
     const user = await prisma.db_user.findUnique({
       where: {
-        uid: session.user.id,
+        uid: userId,
       },
       select: {
         uid: true,

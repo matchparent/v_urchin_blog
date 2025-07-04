@@ -151,6 +151,7 @@ const UBNavContent = () => {
 
       const formData = new FormData();
       formData.append('file', processedFile);
+      formData.append('userId', String(session.user.id));
 
       const response = await fetch('/api/portrait/upload', {
         method: 'POST',

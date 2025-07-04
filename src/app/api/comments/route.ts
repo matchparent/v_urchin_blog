@@ -115,16 +115,14 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const { uid, bid, content, rbid, rtuid } = await request.json();
 
-    if (!session?.user?.id) {
+    if (!uid) {
       return NextResponse.json(
-        { error: 'User not authenticated' },
+        { error: 'User ID is required' },
         { status: 401 }
       );
     }
-
-    const { bid, content, rbid, rtuid } = await request.json();
 
     if (!bid || !content) {
       return NextResponse.json(
@@ -135,7 +133,7 @@ export async function POST(request: NextRequest) {
 
     const newComment = await prisma.ub_reply.create({
       data: {
-        uid: session.user.id,
+        uid: uid,
         bid: parseInt(bid),
         content: content,
         rbid: rbid || null,

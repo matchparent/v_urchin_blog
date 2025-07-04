@@ -1,24 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
 export async function PUT(request: NextRequest) {
   try {
-    // 获取用户 session
-    const session = await getServerSession(authOptions);
+    // 获取请求体数据
+    const { userId, nickname, date_birth } = await request.json();
 
-    if (!session?.user?.id) {
+    if (!userId) {
       return NextResponse.json(
-        { error: 'User not authenticated' },
-        { status: 401 }
+        { error: 'User ID is required' },
+        { status: 400 }
       );
     }
-
-    // 获取请求体数据
-    const { nickname, date_birth } = await request.json();
 
     // 验证必填字段
     if (!nickname) {
@@ -31,7 +26,7 @@ export async function PUT(request: NextRequest) {
     // 更新用户信息
     const updatedUser = await prisma.db_user.update({
       where: {
-        uid: session.user.id,
+        uid: userId,
       },
       data: {
         nickname: nickname,

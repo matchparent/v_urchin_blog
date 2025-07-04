@@ -38,7 +38,7 @@ export default function BasicInfo() {
 
   const fetchUserInfo = () => {
     req({
-      url: '/api/user/info',
+      url: `/api/user/info?userId=${session?.user?.id}`,
       method: 'GET',
     })
       .then(({ data }) => {
@@ -118,6 +118,7 @@ export default function BasicInfo() {
 
         const formData = new FormData();
         formData.append('file', processedFile);
+        formData.append('userId', String(session.user.id));
 
         return req({
           url: '/api/portrait/upload',
@@ -163,6 +164,7 @@ export default function BasicInfo() {
       url: '/api/user/update',
       method: 'PUT',
       data: {
+        userId: session.user.id,
         nickname: userInfo.nickname,
         date_birth: userInfo.date_birth,
       },

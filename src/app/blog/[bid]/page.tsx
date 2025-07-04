@@ -157,6 +157,7 @@ export default function BlogDetailPage() {
       content: commentContent.trim(),
       rbid: replyTo.rbid,
       rtuid: replyTo.rtuid,
+      uid: session?.user?.id,
     };
 
     req({

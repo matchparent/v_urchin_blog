@@ -37,6 +37,7 @@ export default function ChangePass() {
       url: '/api/auth/register',
       method: 'PUT',
       data: {
+        userId: session.user.id,
         oldPassword,
         newPassword,
       },

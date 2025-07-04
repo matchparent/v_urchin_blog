@@ -1,22 +1,18 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
 
 const prisma = new PrismaClient();
 
 export async function POST(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
-    const userId = session?.user?.id;
+    const formData = await req.formData();
+    const file = formData.get('file') as File;
+    const userId = formData.get('userId') as string;
 
     if (!userId) {
       return new NextResponse('Unauthorized', { status: 401 });
     }
-
-    const formData = await req.formData();
-    const file = formData.get('file') as File;
 
     if (!file) {
       return new NextResponse('No file provided', { status: 400 });
@@ -51,7 +47,7 @@ export async function POST(req: NextRequest) {
     // 更新用户头像
     await prisma.db_user.update({
       where: { uid: userId },
-      data: { img: Buffer.from(base64) }, // 存储为 Buffer，这样在读取时会被识别为 Uint8Array
+      data: { img: Buffer.from(base64) },
     });
 
     return new NextResponse('Avatar updated successfully', { status: 200 });
