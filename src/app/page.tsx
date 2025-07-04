@@ -78,7 +78,7 @@ export default function Home() {
       {blogs.map((blog) => (
         <div
           key={blog.bid}
-          className="block mb-5 pb-4 border-b border-gray-200 no-underline text-inherit transition-colors duration-200"
+          className="block mb-5 border-b border-black dark:border-white no-underline text-inherit transition-colors duration-200 relative"
         >
           <div className="text-xs text-gray-500 clearfix flex items-center">
             <Link
@@ -130,11 +130,18 @@ export default function Home() {
               </span>
             </div>
           </div>
-          <MDEditor.Markdown
-            source={blog.content}
-            style={{ whiteSpace: 'pre-wrap', background: 'transparent' }}
-            className="text-[#333] dark:text-white"
-          />
+          <div className="h-[200px] overflow-hidden relative">
+            <MDEditor.Markdown
+              source={blog.content}
+              style={{
+                whiteSpace: 'pre-wrap',
+                background: 'transparent',
+                height: '95%',
+              }}
+              className="text-[#333] dark:text-white h-full"
+            />
+            <div className="pointer-events-none absolute left-0 right-0 bottom-0 h-10 bg-gradient-to-b from-transparent to-white dark:to-zinc-900/90" />
+          </div>
         </div>
       ))}
       {totalBlogs > pageSize && (

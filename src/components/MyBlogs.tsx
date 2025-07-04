@@ -72,7 +72,7 @@ export default function MyBlogs() {
         <Link
           key={blog.bid}
           href={`/blog/${blog.bid}`}
-          className="block mb-5 pb-1 border-b border-gray-200 no-underline text-inherit transition-colors duration-200"
+          className="block mb-5 pb-1 border-b border-gray-200 no-underline text-inherit transition-colors duration-200 relative"
         >
           <div className="text-xs text-gray-500 clearfix">
             <h2 className="text-lg font-bold mb-1 float-left text-[#333] dark:text-white">
@@ -88,11 +88,23 @@ export default function MyBlogs() {
               Views: {blog.num_view}
             </span>
           </div>
-          <MDEditor.Markdown
-            source={blog.content}
-            style={{ whiteSpace: 'pre-wrap', background: 'transparent' }}
-            className="text-[#333] dark:text-white"
-          />
+          <div className="h-[200px] overflow-hidden relative">
+            <MDEditor.Markdown
+              source={blog.content}
+              style={{
+                whiteSpace: 'pre-wrap',
+                background:
+                  typeof window !== 'undefined' &&
+                  window.matchMedia &&
+                  window.matchMedia('(prefers-color-scheme: dark)').matches
+                    ? '#666'
+                    : '#aaa',
+                height: '100%',
+              }}
+              className="text-[#333] dark:text-white h-full"
+            />
+            <div className="pointer-events-none absolute left-0 right-0 bottom-0 h-10 bg-gradient-to-b from-transparent to-white dark:to-zinc-900/90" />
+          </div>
         </Link>
       ))}
     </div>
