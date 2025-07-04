@@ -36,7 +36,7 @@ export async function GET(
     // 查询作者信息
     const author = await prisma.db_user.findUnique({
       where: { uid: blog.uid },
-      select: { uid: true, nickname: true, img: true },
+      select: { uid: true, nickname: true },
     });
 
     // Increment num_view
@@ -59,11 +59,6 @@ export async function GET(
         ? {
             uid: author.uid,
             nickname: author.nickname,
-            img: author.img
-              ? Buffer.isBuffer(author.img)
-                ? author.img.toString('base64')
-                : author.img
-              : null,
           }
         : null,
     };

@@ -41,7 +41,7 @@ export async function GET(request: Request) {
     const userIds = blogs.map((blog) => blog.uid);
     const users = await prisma.db_user.findMany({
       where: { uid: { in: userIds } },
-      select: { uid: true, nickname: true, img: true },
+      select: { uid: true, nickname: true },
     });
     const userMap = new Map(users.map((u) => [u.uid, u]));
 
@@ -51,11 +51,6 @@ export async function GET(request: Request) {
         ? {
             uid: blog.uid,
             nickname: userMap.get(blog.uid)?.nickname || '',
-            img: userMap.get(blog.uid)?.img
-              ? Buffer.isBuffer(userMap.get(blog.uid)?.img)
-                ? userMap.get(blog.uid)?.img.toString('base64')
-                : userMap.get(blog.uid)?.img
-              : null,
           }
         : null,
     }));

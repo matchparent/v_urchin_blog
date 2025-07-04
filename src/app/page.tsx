@@ -27,6 +27,9 @@ export default function Home() {
   const [currentPage, setCurrentPage] = useState(1); // Current page state
   const [totalBlogs, setTotalBlogs] = useState(0); // Total blogs count
   const pageSize = 4; // Blogs per page
+  const [avatarErrorMap, setAvatarErrorMap] = useState<Record<number, boolean>>(
+    {}
+  );
 
   useEffect(() => {
     const fetchBlogs = () => {
@@ -89,15 +92,27 @@ export default function Home() {
                 <div className="flex items-center mr-4 mt-[-2px]">
                   <Image
                     src={
-                      blog.author.img
-                        ? `/api/portrait?uid=${blog.author.uid}&t=${Date.now()}`
-                        : '/deletex.png'
+                      avatarErrorMap[blog.bid]
+                        ? '/deletex.png'
+                        : `/api/portrait?uid=${blog.author.uid}&t=${Date.now()}`
                     }
                     alt="Avatar"
                     width={24}
                     height={24}
                     className="object-cover mr-2 rounded-full"
                     fallback="/deletex.png"
+                    onError={() =>
+                      setAvatarErrorMap((prev) => ({
+                        ...prev,
+                        [blog.bid]: true,
+                      }))
+                    }
+                    onLoad={() =>
+                      setAvatarErrorMap((prev) => ({
+                        ...prev,
+                        [blog.bid]: false,
+                      }))
+                    }
                   />
                   <span className="font-bold text-sm text-[#333] dark:text-white ml-2">
                     {blog.author.nickname}
